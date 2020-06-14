@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        baseImage = 'openjdk:11'
+        baseImage = 'openjdk:latest'
         SCANNER_TOKEN = credentials('scanner-token')
     }
 
