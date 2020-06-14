@@ -5,7 +5,7 @@ pipeline {
         registry = "xconfdockersecurity/container-security-demo"
         registryCredential = 'dockerhub'
         dockerImage = ''
-        baseImage = 'openjdk:11'
+        baseImage = 'adoptopenjdk:11-jre-openj9'
         imageName = "xconfdockersecurity/container-security-demo:$BUILD_NUMBER"
     }
 
