@@ -39,7 +39,6 @@ pipeline {
         }
         stage('Build Image & Scan') {
             steps {
-                checkout scm
                 sh 'docker build --build-arg=token=$SCANNER_TOKEN --no-cache .'
             }
         }
