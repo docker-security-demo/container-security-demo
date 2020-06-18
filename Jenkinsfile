@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        baseImage = 'openjdk:11'
+        baseImage = 'openjdk:latest'
         SCANNER_TOKEN = credentials('scanner-token')
     }
 
@@ -14,7 +14,6 @@ pipeline {
                 }
             }
             steps {
-                checkout scm
                 sh 'hadolint Dockerfile | tee -a hadolint_lint.txt'
             }
             post {
@@ -33,10 +32,13 @@ pipeline {
                 }
             }
         }
-        stage('Scan') {
+        stage('Build App') {
             steps {
-                checkout scm
                 sh './gradlew build --no-daemon'
+            }
+        }
+        stage('Build Image & Scan') {
+            steps {
                 sh 'docker build --build-arg=token=$SCANNER_TOKEN --no-cache .'
             }
         }
