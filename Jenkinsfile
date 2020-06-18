@@ -33,10 +33,15 @@ pipeline {
                 }
             }
         }
-        stage('Scan') {
+        stage('Build App') {
             steps {
                 checkout scm
                 sh './gradlew build --no-daemon'
+            }
+        }
+        stage('Build Image & Scan') {
+            steps {
+                checkout scm
                 sh 'docker build --build-arg=token=$SCANNER_TOKEN --no-cache .'
             }
         }
