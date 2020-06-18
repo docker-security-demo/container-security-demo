@@ -33,7 +33,7 @@ pipeline {
                 }
             }
         }
-        stage('Scan') {
+        stage('Build & Scan') {
             steps {
                 checkout scm
                 sh './gradlew build --no-daemon'
