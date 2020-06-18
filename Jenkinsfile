@@ -14,7 +14,6 @@ pipeline {
                 }
             }
             steps {
-                checkout scm
                 sh 'hadolint Dockerfile | tee -a hadolint_lint.txt'
             }
             post {
@@ -35,7 +34,6 @@ pipeline {
         }
         stage('Build App') {
             steps {
-                checkout scm
                 sh './gradlew build --no-daemon'
             }
         }
