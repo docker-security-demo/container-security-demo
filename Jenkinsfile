@@ -7,7 +7,7 @@ pipeline {
     }
 
     stages {
-        stage ("lint dockerfile") {
+        stage("lint dockerfile") {
             agent {
                 docker {
                     image 'hadolint/hadolint:latest-debian'
@@ -22,7 +22,7 @@ pipeline {
                 }
             }
         }
-        stage ("verify signatures") {
+        stage("verify signatures") {
             steps {
                 sh 'docker trust inspect $baseImage | tee -a signatures.txt'
             }
@@ -33,8 +33,11 @@ pipeline {
             }
         }
         stage('Build Image & Scan') {
-            checkout scm
-            sh './gradlew build --no-daemon'
-            sh 'docker build --build-arg=token=$SCANNER_TOKEN --no-cache .'        }
+            steps {
+                checkout scm
+                sh './gradlew build --no-daemon'
+                sh 'docker build --build-arg=token=$SCANNER_TOKEN --no-cache .'
+            }
+        }
     }
 }
