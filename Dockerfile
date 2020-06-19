@@ -1,11 +1,5 @@
-FROM openjdk:latest AS Build
-USER root
+FROM openjdk:11 AS Build
+RUN groupadd -r xconf && useradd -r -g xconf xconf
+USER xconf
 ADD build/libs/demo-0.0.1-SNAPSHOT.jar demo.jar
 CMD ["java", "-jar", "demo.jar"]
-
-FROM Build AS Scan
-ADD https://get.aquasec.com/microscanner /
-RUN chmod +x /microscanner
-ARG token
-RUN /microscanner ${token}
-RUN echo "No vulnerabilities!"
