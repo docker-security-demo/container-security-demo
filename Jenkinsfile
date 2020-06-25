@@ -2,8 +2,11 @@ pipeline {
     agent any
 
     environment {
-        baseImage = 'openjdk:latest'
-        SCANNER_TOKEN = credentials('scanner-token')
+        registry = "xconfdockersecurity/container-security-demo"
+        registryCredential = 'dockerhub'
+        dockerImage = ''
+        baseImage = 'adoptopenjdk:11-jre-openj9'
+        imageName = "xconfdockersecurity/container-security-demo:$BUILD_NUMBER"
     }
 
     stages {
@@ -32,14 +35,25 @@ pipeline {
                 }
             }
         }
-        stage('Build App') {
+        stage('Building image') {
             steps {
-                sh './gradlew build --no-daemon'
+                script {
+                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                }
             }
         }
-        stage('Build Image & Scan') {
+        stage('Scan') {
             steps {
-                sh 'docker build --build-arg=token=$SCANNER_TOKEN --no-cache .'
+                aquaMicroscanner imageName: imageName, notCompliesCmd: 'exit 4', onDisallowed: 'fail', outputFormat: 'html'
+            }
+        }
+        stage('Deploy Image') {
+            steps {
+                script {
+                    docker.withRegistry('', registryCredential) {
+                        dockerImage.push()
+                    }
+                }
             }
         }
     }
