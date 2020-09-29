@@ -2,11 +2,11 @@ pipeline {
     agent any
 
     environment {
-        registry = "xconfdockersecurity/container-security-demo"
+        registry = "dockerscannerdemo/container-security-demo"
         registryCredential = 'dockerhub'
         dockerImage = ''
         baseImage = 'openjdk:11'
-        imageName = "xconfdockersecurity/container-security-demo:$BUILD_NUMBER"
+        imageName = "dockerscannerdemo/container-security-demo:$BUILD_NUMBER"
     }
 
     stages {
