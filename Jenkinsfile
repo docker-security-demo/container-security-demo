@@ -5,7 +5,7 @@ pipeline {
         registry = "dockerscannerdemo/container-security-demo"
         registryCredential = 'dockerhub'
         dockerImage = ''
-        baseImage = 'openjdk:11'
+        baseImage = 'adoptopenjdk:11-jre-openj9'
         imageName = "dockerscannerdemo/container-security-demo:$BUILD_NUMBER"
     }
 
@@ -42,15 +42,15 @@ pipeline {
                 }
             }
         }
-        stage('Build & Scan') {
-            steps{
+        stage('Scan') {
+            steps {
                 aquaMicroscanner imageName: imageName, notCompliesCmd: 'exit 4', onDisallowed: 'fail', outputFormat: 'html'
             }
         }
         stage('Deploy Image') {
-            steps{
+            steps {
                 script {
-                    docker.withRegistry( '', registryCredential ) {
+                    docker.withRegistry('', registryCredential) {
                         dockerImage.push()
                     }
                 }
