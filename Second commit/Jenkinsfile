@@ -5,7 +5,7 @@ pipeline {
         registry = "dockerscannerdemo/container-security-demo"
         registryCredential = 'dockerhub'
         dockerImage = ''
-        baseImage = 'openjdk:11'
+        baseImage = 'postgres:13'
         imageName = "dockerscannerdemo/container-security-demo:$BUILD_NUMBER"
     }
 

@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        baseImage = 'openjdk:latest'
+        baseImage = 'postgres:latest'
         SCANNER_TOKEN = credentials('scanner-token')
     }
 
