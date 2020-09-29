@@ -1,4 +1,4 @@
-FROM openjdk:11
+FROM postgres:13
 RUN groupadd -r infrawebconf && useradd -r -g infrawebconf infrawebconf
 USER infrawebconf
 COPY build/libs/demo-0.0.1-SNAPSHOT.jar demo.jar
