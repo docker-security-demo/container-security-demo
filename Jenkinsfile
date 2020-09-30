@@ -2,12 +2,15 @@ pipeline {
     agent any
 
     environment {
-        baseImage = 'postgres:latest'
-        SCANNER_TOKEN = credentials('scanner-token')
+        registry = "dockerscannerdemo/container-security-demo"
+        registryCredential = 'dockerhub'
+        dockerImage = ''
+        baseImage = 'postgres:13'
+        imageName = "dockerscannerdemo/container-security-demo:$BUILD_NUMBER"
     }
 
     stages {
-        stage ("lint dockerfile") {
+        stage("lint dockerfile") {
             agent {
                 docker {
                     image 'hadolint/hadolint:latest-debian'
@@ -22,7 +25,7 @@ pipeline {
                 }
             }
         }
-        stage ("verify signatures") {
+        stage("verify signatures") {
             steps {
                 sh 'docker trust inspect $baseImage | tee -a signatures.txt'
             }
@@ -32,14 +35,25 @@ pipeline {
                 }
             }
         }
-        stage('Build App') {
+        stage('Building image') {
             steps {
-                sh './gradlew build --no-daemon'
+                script {
+                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                }
             }
         }
-        stage('Build Image & Scan') {
+        stage('Scan') {
             steps {
-                sh 'docker build --build-arg=token=$SCANNER_TOKEN --no-cache .'
+                aquaMicroscanner imageName: imageName, notCompliesCmd: 'exit 4', onDisallowed: 'fail', outputFormat: 'html'
+            }
+        }
+        stage('Deploy Image') {
+            steps {
+                script {
+                    docker.withRegistry('', registryCredential) {
+                        dockerImage.push()
+                    }
+                }
             }
         }
     }
