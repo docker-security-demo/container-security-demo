@@ -1,16 +1,14 @@
 pipeline {
     agent any
-
     environment {
         registry = "dockerscannerdemo/container-security-demo"
         registryCredential = 'dockerhub'
         dockerImage = ''
-        baseImage = 'postgres:13'
+        baseImage = 'postgres:13.0-alpine'
         imageName = "dockerscannerdemo/container-security-demo:$BUILD_NUMBER"
     }
-
     stages {
-        stage("lint dockerfile") {
+        stage ("lint dockerfile") {
             agent {
                 docker {
                     image 'hadolint/hadolint:latest-debian'
@@ -25,7 +23,7 @@ pipeline {
                 }
             }
         }
-        stage("verify signatures") {
+        stage ("verify signatures") {
             steps {
                 sh 'docker trust inspect $baseImage | tee -a signatures.txt'
             }
@@ -36,7 +34,7 @@ pipeline {
             }
         }
         stage('Building image') {
-            steps {
+            steps{
                 script {
                     dockerImage = docker.build registry + ":$BUILD_NUMBER"
                 }
